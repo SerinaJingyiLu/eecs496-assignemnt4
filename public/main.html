@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>B Tree | Explorable Explanation</title>
+    <meta name="title" content="B Tree | Explorable Explanation" />
+    <link rel="icon" href="lib/tree.png" />
+    <meta
+      name="description"
+      content="Create a web application with interactive visualization, animation, and text to help people understand how B tree works"
+    />
+    <script
+      type="text/javascript"
+      src="http://code.jquery.com/jquery-1.9.1.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"
+    />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.onepage-scroll.js"></script>
+    <link href="css/onepage-scroll.css" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, width=device-width, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="main">
+        <section class="page1">
+          <div class="page_container">
+            <div class="page_container_header">The Structure of B-trees</div>
+            <div
+              id="scrollbar"
+              class="uniquescrollbar"
+              style="overflow-y:auto;margin-top:20px;height:360px;"
+            >
+              <div class="page_container_content">
+                A B-tree organizes its blocks into a tree that is balanced,
+                meaning that all paths from the root to a leaf have the same
+                length. Typically, there are three layers in a B-tree:
+                <span
+                  id="structure_text_root"
+                  class="structure_text"
+                  onmouseover="highlight(this);"
+                  onclick="clickroot(this);"
+                  >the root</span
+                >,
+                <span
+                  id="structure_text_intermediate"
+                  class="structure_text"
+                  onmouseover="highlight(this);"
+                  onclick="clickmiddlelayer(this);"
+                  >an intermediate layer</span
+                >, and
+                <span
+                  id="structure_text_leave"
+                  class="structure_text"
+                  onmouseover="highlight(this);"
+                  onclick="clickleaf(this);"
+                  >leaves</span
+                >, but any number of layers is possible.
+              </div>
+              <div class="page_container_content" style="margin-top:10px;">
+                <div><b>Properties of B-Tree</b></div>
+                <ul>
+
+                  <li>
+                    A B-Tree is defined by the term minimum degree <b>t</b>, which represents the number of pointers in internal node. The
+                    value of <b>t</b> depends upon disk block size.
+                  </li>
+                  <li>
+                      Internal nodes contain <i>only</i> keys; <b>only leaf nodes contain keys and actual data</b>.
+                    </li>
+                  <li>
+                    All leaves are at the same depth and contain between <b>[t/2, t)</b> data items.
+                  </li>
+                  <li>
+                   Internal nodes store up to <b>t-1</b> keys, and have between <b>[t/2, t]</b> children.
+                  </li>
+                  <li>
+                    Root has <b>[2, t]</b> children (or root could be a leaf).
+                  </li>
+                  <li>
+                    Number of children of a node is equal to the number of keys
+                    in it plus 1.
+                  </li>
+                  <li>
+                    All keys of a node are sorted in <b>increasing order</b>.
+                    The child between two keys k1 and k2 contains all keys in
+                    the range from k1 and k2.
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="page_container_content" style="margin-top:20px;">
+              <b>**</b> To help visualize B-trees, you may wish to look ahead at
+              the example on the right (a <b>random</b> B-tree starting with
+              <b>10</b> different numbers).
+            </div>
+            <div style="text-align:center;">
+              <img
+                id="page1_showexample"
+                src="lib/talk.png"
+                style="width:120px;height:110px;"
+                onmouseover="highlight(this);"
+              />
+              <img
+                id="page11_ok"
+                src="lib/ok.png"
+                style="width:100px;height:100px;"
+                onmouseover="highlight(this);"
+                onclick="scrollpage();"
+              />
+            </div>
+          </div>
+          <!-- <img src="phones.png" alt="phones"> -->
+        </section>
+
+        <section class="page2">
+          <div class="page_container">
+            <div class="page_container_header">Lookup in B-trees</div>
+            <div
+              id="scrollbar"
+              class="uniquescrollbar"
+              style="overflow-y:auto;margin-top:20px;height:360px;"
+            >
+              <div class="page_container_content">
+                Suppose we have a B-tree index and we want to find a record with
+                searchkey value <b>K</b>. We search for <b>K</b> recursively,
+                starting at the root and ending at a leaf. The search procedure
+                is:
+              </div>
+              <div class="page_container_content" style="margin-top:3%;">
+                <b>BASIS</b>: If we are at a
+                <span
+                  id="structure_text_leave"
+                  class="structure_text"
+                  onmouseover="highlight(this);"
+                  onclick="clickleaf(this);"
+                  >leaf</span
+                >, look among the keys there. If the <i>i</i> th key is
+                <b>K</b>, then the <i>i</i> th pointer will take us to the
+                desired record.
+              </div>
+              <div class="page_container_content" style="margin-top:3%;">
+                <b>INDUCTION</b>: If we are at an
+                <span
+                  id="structure_text_intermediate"
+                  class="structure_text"
+                  onmouseover="highlight(this);"
+                  onclick="clickmiddlelayer(this);"
+                  >interior node</span
+                >
+                with keys K<sub>1</sub>, K<sub>2</sub>, . . . , K<sub>n</sub>,
+                we then need to decide which of the children of this node should
+                next be examined. That is, there is only one child that could
+                lead to a leaf with key <b>K</b>. If <b>K &lt; K<sub>1</sub></b
+                >, then it is the first child; if
+                <b>K<sub>1</sub> &le; K &le; K<sub>2</sub></b
+                >, it is the second child, and so on. Recursively apply the
+                search procedure at this child.
+              </div>
+              <div style="display: flex;flex-direction: row;">
+                <div
+                  class="page_container_content"
+                  style="margin-top:3%;width:68%;float:left;"
+                >
+                  <b>EXAMPLE: </b>find a record with search key
+                </div>
+                <div class="dropdown" style="margin-top:3%;margin-left:-3%;">
+                  <input
+                    type="button"
+                    style="background: #6B8E23;border-color: #6B8E23;width:80px;font-weight: 600;"
+                    id="select_staff"
+                    class="btn btn-default btn-sm dropdown-toggle"
+                    data-toggle="dropdown"
+                    value="Select a key"
+                    onclick="loaddata(this);"
+                  />
+                  <ul
+                    id="projectSelectorDropdown"
+                    class="dropdown-menu scrollable-menu"
+                  >
+                    <input type="hidden" id="admin_id" class="form-control" />
+                  </ul>
+                </div>
+              </div>
+              <img
+                id="page2_go"
+                src="lib/go.png"
+                style="width:100px;height:100px;    float: left;
+              margin-left: 40%;opacity: 0;
+            "
+                onmouseover="highlight(this);"
+              />
+            </div>
+
+            <div class="page_container_content" style="margin-top:20px;">
+              <b>**</b> To help visualize B-trees, you may wish to look ahead at
+              the example on the right (a <b>random</b> B-tree starting with
+              <b>10</b> different numbers).
+            </div>
+            <div style="text-align:center;">
+              <img
+                id="page1_ok"
+                src="lib/ok.png"
+                style="width:100px;height:100px;"
+                onmouseover="highlight(this);"
+                onclick="scrollpage();"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="page3">
+          <div class="page_container">
+            <div class="page_container_header">Insertion into B-trees</div>
+            <div
+              id="scrollbar"
+              class="uniquescrollbar"
+              style="overflow-y:auto;margin-top:20px;height:360px;"
+            >
+              <div class="page_container_content">
+                To insert value X into a B-tree, there are 3 steps:
+              </div>
+              <div class="page_container_content" style="margin-top:3%;">
+                <ul style="list-style-type:decimal;">
+                  <li>
+                    Use the <b>LOOKUP</b> procedure for B-tree with degree
+                    <b>M</b> to find the leaf node to which X should be added.
+                  </li>
+                  <li>
+                    Add X to this node in the appropriate place among the values
+                    already there. Being a leaf node there are no subtrees to
+                    worry about.
+                  </li>
+                  <li>
+                    If there are <b>M-1</b> or fewer values in the node after
+                    adding X, then we are finished.<br />If there are
+                    <b>M</b> nodes after adding X, we say the node has
+                    <b><i>overflowed</i></b
+                    >. <br />To repair this, we split the node into three
+                    parts:<br />
+                    <b> Left:</b>
+                    <p style="text-indent: 1cm;">
+                      the first <b>(M-1)/2</b> values
+                    </p>
+                    <b>Middle: </b>
+                    <p style="text-indent: 1cm;">
+                      the middle value (position <b>1+((M-1)/2</b>)
+                    </p>
+                    <b>Right:</b>
+                    <p style="text-indent: 1cm;">
+                      the last <b>(M-1)/2</b> values
+                    </p>
+                    <p>
+                      Left and Right have just enough values to be made into
+                      individual nodes. That's what we do... they become the
+                      left and right children of Middle, which we add in the
+                      appropriate place in this node's parent.
+                    </p>
+                    <p>
+                      If there is no room in the parent, we repeat the step 3
+                      until no overflow occurs, or until the root itself
+                      overflows. If the root overflows, we split it, as usual,
+                      and create a new root node with Middle as its only value
+                      and Left and Right as its children (as usual).
+                    </p>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="page_container_content"
+                style="margin-top:3%;width:100%;float:left;display:flex;"
+              >
+                <div style="width: 46%;float: left;">
+                  <b>EXAMPLE: </b>Insert the value
+                </div>
+                <form action="#" id="add-form">
+                  <div
+                    class="input-group"
+                    style="width:50%;margin-top: -1%;margin-left: 0.5%;"
+                  >
+                    <input type="text" id="addinput" class="form-control" />
+                    <span class="input-group-btn">
+                      <button
+                        class="btn btn-default"
+                        id="addbutton"
+                        type="submit"
+                        style="background: #6B8E23;font-weight:600;"
+                      >
+                        Add!
+                      </button>
+                    </span>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="page_container_content" style="margin-top:20px;">
+              <b>**</b> To help visualize B-trees, you may wish to look ahead at
+              the example on the right (a <b>random</b> B-tree starting with
+              <b>10</b> different numbers).
+            </div>
+            <div style="text-align:center;">
+              <img
+                id="page1_ok"
+                src="lib/ok.png"
+                style="width:100px;height:100px;"
+                onmouseover="highlight(this);"
+                onclick="scrollpage();"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="page3">
+          <div class="page_container">
+            <div class="page_container_header">Deletion from B-trees</div>
+            <div
+              id="scrollbar"
+              class="uniquescrollbar"
+              style="overflow-y:auto;margin-top:20px;height:360px;"
+            >
+              <div class="page_container_content">
+                If we are to delete a record with a given key <b>K</b>, we must
+                first locate that record and its key-pointer pair in a leaf of
+                the B-tree by referring to the '<span
+                  style="color:#6B8E23;cursor: pointer;text-decoration:underline;"
+                  onclick="jumppage();"
+                  ><b>Lookup in B-trees</b></span
+                >'. We then delete the record itself from the data file, and we
+                delete the key-pointer pair from the B-tree.
+              </div>
+              <div class="page_container_content" style="margin-top:3%;">
+                If the B-tree node from which a deletion occurred still has at
+                least the minimum number of keys and pointers, then there is
+                nothing more to be done. However, it is possible that the node
+                was right at the minimum occupancy before the deletion, so after
+                deletion the constraint on the number of keys is violated. We
+                then need to do one of two things for a node <b>N</b> whose
+                contents are subminimum; one case requires a recursive deletion
+                up the tree:
+              </div>
+              <div class="page_container_content" style="margin-top:3%;">
+                <ul style="list-style-type:decimal;">
+                  <li>
+                    If one of the adjacent siblings of node <b>N</b> has more
+                    than the minimum number of keys and pointers, then one
+                    key-pointer pair can be moved to <b>N</b>, keeping the order
+                    of keys intact. Possibly, the keys at the parent of <b>N</b>
+                    must be adjusted to reflect the new situation.
+                  </li>
+                  <li>
+                    If neither of the adjacent siblings of node <b>N</b> has
+                    more than minimum number of keys and pointers, we merge
+                    these two nodes, effectively deleting one of them. We need
+                    to adjust the keys at the parent, and then delete a key and
+                    pointer at the parent. If the parent is still full enough,
+                    then we are done. If not, then we recursively apply the
+                    deletion algorithm at the parent.
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="page_container_content"
+                style="margin-top:3%;width:100%;float:left;display:flex;"
+              >
+                <div style="width: 47%;float: left;">
+                  <b>EXAMPLE: </b>Delete the value
+                </div>
+                <form action="#" id="delete-form" style="width: 30%;
+                margin-left: 1%;">
+                  <div
+                    class="input-group"
+                    style="margin-top: -1%;"
+                  >
+                    <input type="text" id="deleteinput" class="form-control" />
+                    <span class="input-group-btn">
+                      <button
+                        class="btn btn-default"
+                        id="deletebutton"
+                        type="submit"
+                        style="background: #6B8E23;font-weight:600;"
+                      >
+                        Delete!
+                      </button>
+                    </span>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="page_container_content" style="margin-top:20px;">
+              <b>**</b> To help visualize B-trees, you may wish to look ahead at
+              the example on the right (a <b>random</b> B-tree starting with
+              <b>10</b> different numbers).
+            </div>
+            <div style="text-align:center;">
+              <img
+                id="page4_ok"
+                src="lib/ok.png"
+                style="width:100px;height:100px;"
+                onmouseover="highlight(this);"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="page3">
+          <div class="page_container" style="height:70%">
+            <div class="page_container_header">Let's Play</div>
+            <div id="playbar">
+              <div style="margin:0 auto;">
+                <div style="display:flex;">
+                  <label
+                    style="font-size: 20px;margin-top: 1%;    color: #6B8E23;"
+                    >DEGREE</label
+                  >
+                  <div
+                    class="dropdown"
+                    id="orderdropdownclass"
+                    style="margin-left: 4%;"
+                  >
+                    <button
+                      class="btn btn-default dropdown-toggle"
+                      type="button"
+                      id="orderdropdown"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="true"
+                      style="min-width:150px;    border: 2px solid #6B8E23;
+                  font-size: 16px;"
+                    >
+                      Select a Degree
+                    </button>
+                    <ul
+                      id="orderdropdown-menu"
+                      class="dropdown-menu scrollable-menu"
+                      style="    min-width: 150px;"
+                    >
+                      <li><a href="#" data-value="3">3</a></li>
+                      <li><a href="#" data-value="4">4</a></li>
+                      <li><a href="#" data-value="5">5</a></li>
+                      <li><a href="#" data-value="6">6</a></li>
+                      <li><a href="#" data-value="7">7</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <form action="#" id="add-node-form">
+                  <div
+                    id="addNodeContainer"
+                    style="display:flex;margin-top: 8%;"
+                  >
+                    <label
+                      style="font-size: 20px;margin-top: 1%;    color: #6B8E23;"
+                      >INSERT</label
+                    >
+                    <input
+                      type="number"
+                      style="width: 150px;
+                  margin-left: 4%;
+                  border: 2px solid #6B8E23;"
+                      class="form-control"
+                      id="addNode"
+                    />
+                    <button
+                      class="btn btn-default"
+                      id="addNodebutton"
+                      type="submit"
+                      style="background: #6B8E23;font-weight:600;    margin-left: 2%;
+                        height: 34px;"
+                    >
+                      OK!
+                    </button>
+                  </div>
+                </form>
+                <div
+                  id="deleteNodeContainer"
+                  style="display:flex;margin-top: 8%;"
+                >
+                  <label
+                    style="font-size: 20px;margin-top: 1%;    color: #6B8E23;"
+                    >DELETE</label
+                  >
+                  <input
+                    type="number"
+                    style="width: 150px;
+                    margin-left: 1.7%;
+                    border: 2px solid #6B8E23;"
+                    class="form-control"
+                    id="deleteNode"
+                  />
+                  <button
+                    class="btn btn-default"
+                    id="deleteNodebutton"
+                    type="submit"
+                    style="background: #6B8E23;font-weight:600;    margin-left: 2%;
+                          height: 34px;"
+                  >
+                    OK!
+                  </button>
+                </div>
+                <form action="#" id="find-node-form">
+                  <div
+                    id="findNodeContainer"
+                    style="display:flex;margin-top: 8%;"
+                  >
+                    <label
+                      style="font-size: 20px;margin-top: 1%;    color: #6B8E23;"
+                      >FIND</label
+                    >
+                    <input
+                      type="number"
+                      style="width: 150px;
+                      margin-left: 13%;
+                      border: 2px solid #6B8E23;"
+                      class="form-control"
+                      id="findNode"
+                    />
+                    <button
+                      class="btn btn-default"
+                      id="findNodebutton"
+                      type="submit"
+                      style="background: #6B8E23;font-weight:600;    margin-left: 2%;
+                            height: 34px;"
+                    >
+                      OK!
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div
+              style="text-align:center;position: absolute; bottom: 0px; width: 100%;"
+            >
+              <img
+                id="page5_again"
+                src="lib/again.jpeg"
+                style="width:150px;height:135px;"
+                onmouseover="highlight(this);"
+              />
+              <img
+                id="page5_home"
+                src="lib/home.jpg"
+                style="width:150px;height:135px;"
+                onmouseover="highlight(this);"
+                onclick="scrollpage();"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="canvasFrame">
+        <div stye="text-align: left;width:100%">
+          <div
+            id="degreetext2"
+            class="degreetext"
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Must contain [1,2] keys in a non-root node!"
+          >
+            A Random B-tree Degree: 3
+          </div>
+          <div class="degreetext" id="degreetext">Basic Classification</div>
+          <div id="degreetext3" class="degreetext">
+            Loading...
+          </div>
+          <div id="degreetext4" class="degreetext"></div>
+        </div>
+        <div id="mainCanvas" class="canvasContent"></div>
+      </div>
+      <div id="navTop" class="navTop">
+        <div class="navTopTitle">B Tree</div>
+        <div id="navTopSub"></div>
+      </div>
+    </div>
+  </body>
+  <script src="http://d3js.org/d3.v4.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $(".main").onepage_scroll({
+        sectionContainer: "section",
+        responsiveFallback: 600,
+        afterMove: function(index) {
+          if (index == 2) {
+            // load data for dropdown menu
+
+            var list = document.getElementById("projectSelectorDropdown");
+            var old = document.querySelectorAll("#projectSelectorDropdown li");
+            if (old) {
+              // document.getElementById('select_staff').getAttribute('value')="Select a key";
+
+              old.forEach(function(item) {
+                list.removeChild(item);
+              });
+            }
+            var rows = d3.selectAll(".node").data();
+            var array = [];
+            rows.forEach(function(item, index) {
+              array = array.concat(item.data.name.split(","));
+            });
+
+            for (var i = 0; i < array.length; i++) {
+              var li = document.createElement("li");
+              var link = document.createElement("a");
+              var text = document.createTextNode(array[i]);
+              link.appendChild(text);
+              link.href = "#";
+              li.appendChild(link);
+              list.appendChild(li);
+            }
+          }
+        },
+        beforeMove: function(index) {
+          if (index == 2) {
+            $(".dropdown-toggle").val("Select a key");
+            document.querySelector("#page2_go").style.opacity = 0;
+          }
+          $(".uniquescrollbar").scrollTop(0);
+        },
+        loop: true
+      });
+      $(".main").disable();
+      $("#degreetext")
+        .hide(0)
+        .delay(100)
+        .fadeIn(2000);
+      $("#degreetext2").hide();
+      $("#degreetext3").hide();
+      $("#degreetext4").hide();
+      $("#page11_ok").hide();
+    });
+
+    // $(document).bind("mousewheel DOMMouseScroll MozMousePixelScroll", function(
+    //   event
+    // ) {
+    //   //This i added one line
+    //   if ($("body").hasClass("scroll-disabled")) {
+    //     return;
+    //   }
+
+    //   event.preventDefault();
+    //   var delta = event.originalEvent.wheelDelta || -event.originalEvent.detail;
+    //   if (!$("body").hasClass("disabled-onepage-scroll"))
+    //     init_scroll(event, delta);
+    // });
+
+    var width = 200,
+      height = 123;
+
+    var coordsX = [0, 20, 40, 60, 80];
+
+    var i = 0;
+
+    var svg = d3
+      .select("#navTopSub")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    $("svg").css({ top: 0, left: 190, position: "absolute" });
+
+    var g = svg.append("g");
+
+    var t = d3.interval(function(elapsed) {
+      g.append("svg:image")
+
+        .attr("xlink:href", "lib/tree.png")
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("id", "tree_" + i)
+        .attr("x", coordsX[i])
+        .attr("y", 0)
+        .on("mouseover", handleMouseOver)
+        .transition()
+        .duration(1000)
+        .attr("y", 100)
+        .ease(d3.easeBounce);
+
+      i = i + 1;
+      if (i == 5) t.stop();
+    }, 200);
+
+    function handleMouseOver(d, i, a) {
+      g.select("#" + a[0].getAttribute("id"))
+        .transition()
+        .attr("y", 40)
+        .transition()
+        .attr("y", 100);
+    }
+
+    function highlight(x) {
+      x.style.cursor = "pointer";
+    }
+
+    function scrollpage() {
+      $(".main").enable();
+      $(".main").moveDown();
+      $(".main").disable();
+    }
+
+    function jumppage() {
+      $(".main").enable();
+      $(".main").moveTo(2);
+      $(".main").disable();
+    }
+
+    $(document).ready(function() {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+  </script>
+  <script src="https://www.amcharts.com/lib/4/core.js"></script>
+  <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+  <script src="https://www.amcharts.com/lib/4/plugins/forceDirected.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/kelly.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+  <script type="text/javascript" src="js/btree.js"></script>
+  <script type="text/javascript" src="js/btreenode.js"></script>
+  <script type="text/javascript" src="js/mainCanvas.js"></script>
+  <script type="text/javascript" src="js/action.js"></script>
+</html>
