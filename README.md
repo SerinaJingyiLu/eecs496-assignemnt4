@@ -17,4 +17,6 @@ Explorable Explanation on B-Trees for Northwestern's EECS 496 Assignment 4: desi
 
 4. Run `npm install` to install all the packages.
 
-5. Once packages have installed, run `npm start` to see the application locally.
+5. Once packages have installed, run `npm start` 
+
+6. Open Chrome and enter `localhost:3000` to see the application locally.
