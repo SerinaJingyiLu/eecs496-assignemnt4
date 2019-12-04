@@ -16,7 +16,7 @@ var BTree = function(order) {
 
 // create a node that belongs to this tree
 BTree.prototype.createNode = function(keys, children, parent) {
-  return BTreeNode(this, keys, children, parent);
+  return BTreeNode(this, keys, children, parent, this.order);
 };
 
 // Search function that returns the leaf node to insert into
@@ -35,6 +35,7 @@ BTree.prototype.searchWholePath = function(value, strict) {
   }
 };
 
+/*
 BTree.prototype.delete = function(value){
   this.removedKeys = [];
   if (!this.search(value, true)) {
@@ -43,7 +44,7 @@ BTree.prototype.delete = function(value){
   }
   var target = this.search(value);
   var lowBound = Math.floor(this.order/2)
-target.swapchildren(value, lowBound);
+  target.swapchildren(value, lowBound);
   if(target.keys.length - 1 < lowBound){
     if(target.isLeaf()){
       this.removedKeys.push(value); 
@@ -60,6 +61,15 @@ target.swapchildren(value, lowBound);
 
 
 
+}*/
+
+BTree.prototype.delete = function(value){
+  //console.log(this.root);
+  this.root.remove(value);
+  while (this.root.keyCount() == 0) {
+    this.root = this.root.children[0];
+  }
+  this.root.tidyup();
 }
 
 BTree.prototype.removedChild = function(){

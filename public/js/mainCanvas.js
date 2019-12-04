@@ -193,6 +193,20 @@ $(function() {
       });
   });
 
+  $("#deletebutton").click(function() {
+    var value = parseInt($("#deleteinput").val());
+    search1(value, 
+      () => {
+        Btree.delete(value);
+        //$("#addinput").val("");
+        data = Btree.toJSON();
+        root = d3.hierarchy(data);
+        update(data);
+        console.log(Btree);
+      });
+  });
+
+  /*
   $("#delete-form").submit(async function(event) {
     event.preventDefault();
     if($("#deleteinput").val()==""){
@@ -209,7 +223,7 @@ $(function() {
     root = d3.hierarchy(data);
     update(data);
     }
-  });
+  });*/
 
   $("#page5_again").click(function() {
     var myNode = document.getElementById("mainCanvas");
