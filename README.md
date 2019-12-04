@@ -4,14 +4,8 @@
 
 ## Topic: B-Trees
 
-Explorable Explanation on B-Trees for Northwestern's EECS 496 Assignment 4: designing and implementing an explorable explanation that uses interactive visualization, animation, and text to help people understand a complex process or phenomena. See a live demo [here](https://serinajingyilu.github.io/eecs496-assignment4/public/main.html).
+Explorable Explanation on B-Trees for Northwestern's EECS 496 Assignment 4: designing and implementing an explorable explanation that uses interactive visualization, animation, and text to help people understand a complex process or phenomena. See a live demo [here](https://eecs496-assignment4-app.azurewebsites.net).
 
-** The live demo exists the following error:
-```
-Failed to load resource: the server responded with a status of 404 ()
-```
-
-Therefore, it is still stronly recommended to follow up the setup steps below to run the application.
 
 ## Setup
 
