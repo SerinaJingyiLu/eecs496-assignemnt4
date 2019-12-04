@@ -93,7 +93,7 @@ BTreeNode.prototype.swapchildren = function(value,lowBound){
 BTreeNode.prototype.insert = function(value) {
   var int = parseInt(value) || 0;
   if (int <= 0 || int > 1000000000000) {
-    alert("Please enter a valid integer.");
+    Newalert("Please enter a valid integer.");
     return false;
   }
 
@@ -143,7 +143,7 @@ BTreeNode.prototype.handleOverflow = function() {
 BTreeNode.prototype.insert2 = function(value) {
   var int = parseInt(value) || 0;
   if (int <= 0 || int > 1000000000000) {
-    alert("Please enter a valid integer.");
+    Newalert("Please enter a valid integer.");
     return false;
   }
   var insertPath = [];
@@ -289,3 +289,14 @@ BTreeNode.prototype.toJSON = function() {
   }
   return json;
 };
+
+function Newalert(e) {
+  $("body").append(
+    '<div id="msg"><div id="msg_top">Warning<span class="msg_close">×</span></div><div id="msg_cont">' +
+      e +
+      '</div><div class="msg_close" id="msg_clear">OK</div></div>'
+  );
+  $(".msg_close").click(function() {
+    $("#msg").remove();
+  });
+}

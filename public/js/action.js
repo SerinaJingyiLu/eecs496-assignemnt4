@@ -1,3 +1,27 @@
+function handleMouseOver(d, i, a) {
+  g.select("#" + a[0].getAttribute("id"))
+    .transition()
+    .attr("y", 40)
+    .transition()
+    .attr("y", document.getElementById('navTop').clientHeight - 23);
+}
+
+function highlight(x) {
+  x.style.cursor = "pointer";
+}
+
+function scrollpage() {
+  $(".main").enable();
+  $(".main").moveDown();
+  $(".main").disable();
+}
+
+function jumppage() {
+  $(".main").enable();
+  $(".main").moveTo(2);
+  $(".main").disable();
+}
+
 function clickroot(x) {
   d3.selectAll(".node")
     .filter(function(d) {

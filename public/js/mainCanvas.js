@@ -138,7 +138,7 @@ $(function() {
   $("#add-node-form").submit(async function(event) {
     event.preventDefault();
     if($("#addNode").val()==""){
-      alert("The input cannot be empty!");
+      Newalert("The input cannot be empty!");
       $("#addNode").val("");
     }else{
     var value = parseInt($("#addNode").val());
@@ -171,7 +171,7 @@ $(function() {
   $("#find-node-form").submit(async function(event) {
     event.preventDefault();
     if($("#findNode").val()==""){
-      alert("The input cannot be empty!");
+      Newalert("The input cannot be empty!");
       $("#findNode").val("");
     }else{
     var value = parseInt($("#findNode").val());
@@ -196,7 +196,7 @@ $(function() {
   $("#delete-form").submit(async function(event) {
     event.preventDefault();
     if($("#deleteinput").val()==""){
-      alert("The input cannot be empty!");
+      Newalert("The input cannot be empty!");
       $("#deleteinput").val("");
     }else{
     var value = parseInt($("#deleteinput").val());
@@ -417,7 +417,7 @@ $(function() {
         rectAnimation.stop();
         if (!exactNode) {
           setTimeout(function() {
-            alert("The number is not in the tree!");
+            Newalert("The number is not in the tree!");
           }, 1000);
         }
       }
@@ -433,7 +433,7 @@ $(function() {
         .style("stroke-width", "0");
       if (!exactNode) {
         setTimeout(function() {
-          alert("The number is not in the tree!");
+          Newalert("The number is not in the tree!");
         }, 800);
       }
     }
@@ -694,4 +694,16 @@ $(function() {
       };
     }, 1000);
   }
+
+  function Newalert(e) {
+    $("body").append(
+      '<div id="msg"><div id="msg_top">Warning<span class="msg_close">×</span></div><div id="msg_cont">' +
+        e +
+        '</div><div class="msg_close" id="msg_clear">OK</div></div>'
+    );
+    $(".msg_close").click(function() {
+      $("#msg").remove();
+    });
+  }
+
 });

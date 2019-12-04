@@ -7,7 +7,7 @@ var BTree = function(order) {
   tree.unattached_nodes = [[]]; // array for unattached nodes based on leaf_offset
   tree.removedKeys = [];
   if (tree.order < 3) {
-    alert("Degree must be larger than 3!");
+    Newalert("Degree must be larger than 3!");
     return false;
   }
 
@@ -38,7 +38,7 @@ BTree.prototype.searchWholePath = function(value, strict) {
 BTree.prototype.delete = function(value){
   this.removedKeys = [];
   if (!this.search(value, true)) {
-    alert("The value " + value + " does not exist!");
+    Newalert("The value " + value + " does not exist!");
     return false;
   }
   var target = this.search(value);
@@ -69,7 +69,7 @@ BTree.prototype.removedChild = function(){
 // Main insertion function
 BTree.prototype.insert = function(value, silent) {
   if (this.search(value, true)) {
-    if (!silent) alert("The value " + value + " already exists!");
+    if (!silent) Newalert("The value " + value + " already exists!");
     return false;
   }
 
@@ -114,7 +114,7 @@ BTree.prototype.removeUnattached = function(node, level) {
 
 BTree.prototype.insertWholePath = function(value, silent) {
   if (this.search(value, true)) {
-    if (!silent) alert("The value " + value + " already exists!");
+    if (!silent) Newalert("The value " + value + " already exists!");
     return false;
   }
   var wholePath = [];
@@ -164,3 +164,14 @@ BTree.prototype.seed = function(count) {
 BTree.prototype.isEmpty = function() {
   return !this.root;
 };
+
+function Newalert(e) {
+  $("body").append(
+    '<div id="msg"><div id="msg_top">Warning<span class="msg_close">×</span></div><div id="msg_cont">' +
+      e +
+      '</div><div class="msg_close" id="msg_clear">OK</div></div>'
+  );
+  $(".msg_close").click(function() {
+    $("#msg").remove();
+  });
+}
