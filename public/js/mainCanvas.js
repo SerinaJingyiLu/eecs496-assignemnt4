@@ -27,7 +27,9 @@ $(function() {
 
   var newTree = true;
 
-  var Btree, data, svg;
+  var Btree, data, svg, oldnode;
+
+  var removedNode = 0;
 
   var degree = 3; //Default value of degree
 
@@ -62,7 +64,8 @@ $(function() {
 
     data = Btree.toJSON();
     root = d3.hierarchy(data);
-
+    Btree.numberofChildren(Btree.root)
+    oldnode = Btree.numberoftreenode;
     update(data);
 
     $("#degreetext").fadeOut(0);
@@ -137,62 +140,118 @@ $(function() {
 
   $("#add-node-form").submit(async function(event) {
     event.preventDefault();
-    if($("#addNode").val()==""){
+    if ($("#addNode").val() == "") {
       Newalert("The input cannot be empty!");
       $("#addNode").val("");
-    }else{
-    var value = parseInt($("#addNode").val());
-    if (newTree) {
-      Btree = BTree(degree);
-
-      //Generate a randome btree
-      Btree.seed(0);
-      Btree.insert(value, false); 
-
-      $("#addNode").val("");
-
-      data = Btree.toJSON();
-      root = d3.hierarchy(data);
-      update(data);
-      newTree = false;
     } else {
-      Btree.insert(value, false); 
+      var value = parseInt($("#addNode").val());
+      if (newTree) {
+        Btree = BTree(degree);
 
-      $("#addNode").val("");
+        //Generate a randome btree
+        Btree.seed(0);
+        Btree.insert(value, false);
 
-      data = Btree.toJSON();
-      root = d3.hierarchy(data);
-      update(data);
+        $("#addNode").val("");
+
+        data = Btree.toJSON();
+        root = d3.hierarchy(data);
+        Btree.numberofChildren(Btree.root)
+        oldnode = Btree.numberoftreenode;
+        console.log(oldnode)
+        update(data);
+        newTree = false;
+      } else {
+        Btree.insert(value, false);
+
+        $("#addNode").val("");
+
+        data = Btree.toJSON();
+        root = d3.hierarchy(data);
+        Btree.numberofChildren(Btree.root)
+        oldnode = Btree.numberoftreenode;
+        console.log(oldnode)
+        update(data);
+      }
+      document.getElementById("degreetext4").innerHTML =
+        "Insert number " + value;
     }
-    document.getElementById("degreetext4").innerHTML = "Insert number " + value;
-  }
   });
 
   $("#find-node-form").submit(async function(event) {
     event.preventDefault();
-    if($("#findNode").val()==""){
+    if ($("#findNode").val() == "") {
       Newalert("The input cannot be empty!");
       $("#findNode").val("");
-    }else{
-    var value = parseInt($("#findNode").val());
-    search(value);
-    $("#findNode").val("");
-    document.getElementById("degreetext4").innerHTML = "Find number " + value;
+    } else {
+      var value = parseInt($("#findNode").val());
+      search(value);
+      $("#findNode").val("");
+      document.getElementById("degreetext4").innerHTML = "Find number " + value;
     }
   });
 
   $("#addbutton").click(function() {
+    if ($("#addinput").val() == "") {
+      Newalert("The input cannot be empty!");
+      $("#addinput").val("");
+    } else {
     var value = parseInt($("#addinput").val());
-    search1(value, 
-      () => {
-        Btree.insert(value, false);
-        $("#addinput").val("");
-        data = Btree.toJSON();
-        root = d3.hierarchy(data);
-        update(data);
-      });
+    search1(value, () => {
+      Btree.insert(value, false);
+      $("#addinput").val("");
+      data = Btree.toJSON();
+      root = d3.hierarchy(data);
+      update(data);
+    });
+  }
   });
 
+  $("#deletebutton").click(function() {
+    if ($("#deleteinput").val() == "") {
+      Newalert("The input cannot be empty!");
+      $("#deleteinput").val("");
+    } else {
+    var value = parseInt($("#deleteinput").val());
+    
+    search1(value, () => {
+      
+      Btree.delete(value);
+      Btree.numberofChildren(Btree.root)
+      removedNode = oldnode - Btree.numberoftreenode;
+      oldnode = Btree.numberoftreenode;
+      console.log(removedNode)
+      $("#deleteinput").val("");
+      data = Btree.toJSON();
+      root = d3.hierarchy(data);
+      update(data);
+    });
+  }
+  });
+
+  $("#deleteNodebutton").click(function(){
+    if ($("#deleteNode").val() == "") {
+      Newalert("The input cannot be empty!");
+      $("#deleteNode").val("");
+    } else {
+    var value = parseInt($("#deleteNode").val());
+    
+    search1(value, () => {
+      
+      Btree.delete(value);
+      Btree.numberofChildren(Btree.root)
+      removedNode = oldnode - Btree.numberoftreenode;
+      oldnode = Btree.numberoftreenode;
+      console.log(removedNode)
+      $("#deleteNode").val("");
+      data = Btree.toJSON();
+      root = d3.hierarchy(data);
+      update(data);
+    });
+  }
+  });
+
+  /*
   $("#delete-form").submit(async function(event) {
     event.preventDefault();
     if($("#deleteinput").val()==""){
@@ -200,16 +259,13 @@ $(function() {
       $("#deleteinput").val("");
     }else{
     var value = parseInt($("#deleteinput").val());
-
     Btree.delete(value);
-
     $("#deleteinput").val("");
-
     data = Btree.toJSON();
     root = d3.hierarchy(data);
     update(data);
     }
-  });
+  });*/
 
   $("#page5_again").click(function() {
     var myNode = document.getElementById("mainCanvas");
@@ -359,16 +415,20 @@ $(function() {
       //   thisNode.attr("y", d.children || d._children ? -18 : 18);
     });
 
-    if (Btree.removedChild().length != 0) {
+    if (removedNode!= 0) {
       var nodeIndex = svg.selectAll("g.node")._groups[0].length - 1;
       var linkIndex = svg.selectAll("path.link")._groups[0].length - 1;
-      for (var i = 0; i < Btree.removedChild().length; i++) {
+      for (var i = 0; i < removedNode; i++) {
         d3.select(svg.selectAll("g.node")._groups[0][nodeIndex]).remove();
         d3.select(svg.selectAll("path.link")._groups[0][linkIndex]).remove();
         nodeIndex -= 1;
         linkIndex -= 1;
       }
     }
+
+    removedNode = 0;
+
+
   }
 
   function search(value) {
@@ -687,11 +747,10 @@ $(function() {
       }
 
       index = index + 1;
-      if (index == lookupArray_update.length)
-      {
+      if (index == lookupArray_update.length) {
         rectAnimation.stop();
         callback();
-      };
+      }
     }, 1000);
   }
 
@@ -705,5 +764,4 @@ $(function() {
       $("#msg").remove();
     });
   }
-
 });

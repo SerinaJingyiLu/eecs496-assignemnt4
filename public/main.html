@@ -66,19 +66,22 @@
               <div class="page_container_content" style="margin-top:10px;">
                 <div><b>Properties of B-Tree</b></div>
                 <ul>
-
                   <li>
-                    A B-Tree is defined by the term minimum degree <b>t</b>, which represents the number of pointers in internal node. The
-                    value of <b>t</b> depends upon disk block size.
+                    A B-Tree is defined by the term minimum degree <b>t</b>,
+                    which represents the number of pointers in internal node.
+                    The value of <b>t</b> depends upon disk block size.
                   </li>
                   <li>
-                      Internal nodes contain <i>only</i> keys; <b>only leaf nodes contain keys and actual data</b>.
-                    </li>
-                  <li>
-                    All leaves are at the same depth and contain between <b>[t/2, t)</b> data items.
+                    Internal nodes contain <i>only</i> keys;
+                    <b>only leaf nodes contain keys and actual data</b>.
                   </li>
                   <li>
-                   Internal nodes store up to <b>t-1</b> keys, and have between <b>[t/2, t]</b> children.
+                    All leaves are at the same depth and contain between
+                    <b>[t/2, t)</b> data items.
+                  </li>
+                  <li>
+                    Internal nodes store up to <b>t-1</b> keys, and have between
+                    <b>[t/2, t]</b> children.
                   </li>
                   <li>
                     Root has <b>[2, t]</b> children (or root could be a leaf).
@@ -279,24 +282,22 @@
                 <div style="width: 46%;float: left;">
                   <b>EXAMPLE: </b>Insert the value
                 </div>
-                
-                  <div
-                    class="input-group"
-                    style="width:30%;margin-top: -1%;margin-left: 0.5%;"
-                  >
-                    <input type="text" id="addinput" class="form-control" />
-                    <span class="input-group-btn">
-                      <button
-                        class="btn btn-default"
-                        id="addbutton"
-                        type="submit"
-                        style="background: #6B8E23;font-weight:600;"
-                      >
-                        Add!
-                      </button>
-                    </span>
-                  </div>
-                
+
+                <div
+                  class="input-group"
+                  style="width:30%;margin-top: -1%;margin-left: 0.5%;"
+                >
+                  <input type="number" id="addinput" class="form-control" />
+                  <span class="input-group-btn">
+                    <button
+                      class="btn btn-default"
+                      id="addbutton"
+                      style="background: #6B8E23;font-weight:600;"
+                    >
+                      Add!
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
             <div class="page_container_content" style="margin-top:20px;">
@@ -371,25 +372,18 @@
                 <div style="width: 47%;float: left;">
                   <b>EXAMPLE: </b>Delete the value
                 </div>
-                <form action="#" id="delete-form" style="width: 30%;
-                margin-left: 1%;">
-                  <div
-                    class="input-group"
-                    style="margin-top: -1%;"
-                  >
-                    <input type="text" id="deleteinput" class="form-control" />
-                    <span class="input-group-btn">
-                      <button
-                        class="btn btn-default"
-                        id="deletebutton"
-                        type="submit"
-                        style="background: #6B8E23;font-weight:600;"
-                      >
-                        Delete!
-                      </button>
-                    </span>
-                  </div>
-                </form>
+                <div class="input-group" style="width:30%;margin-top: -1%;margin-left: 0.5%;">
+                  <input type="number" id="deleteinput" class="form-control" />
+                  <span class="input-group-btn">
+                    <button
+                      class="btn btn-default"
+                      id="deletebutton"
+                      style="background: #6B8E23;font-weight:600;"
+                    >
+                      Delete!
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
             <div class="page_container_content" style="margin-top:20px;">

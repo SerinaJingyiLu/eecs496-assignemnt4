@@ -6,6 +6,7 @@ var BTree = function(order) {
   tree.current_leaf_offset = 0;
   tree.unattached_nodes = [[]]; // array for unattached nodes based on leaf_offset
   tree.removedKeys = [];
+  tree.numberoftreenode = 1;
   if (tree.order < 3) {
     Newalert("Degree must be larger than 3!");
     return false;
@@ -16,7 +17,7 @@ var BTree = function(order) {
 
 // create a node that belongs to this tree
 BTree.prototype.createNode = function(keys, children, parent) {
-  return BTreeNode(this, keys, children, parent);
+  return BTreeNode(this, keys, children, parent, this.order);
 };
 
 // Search function that returns the leaf node to insert into
@@ -31,10 +32,11 @@ BTree.prototype.searchWholePath = function(value, strict) {
   if (!this.root) return [];
   else {
     var node = this.root.traverse2(value, strict, wholepath);
-    return {node: node, path: wholepath};
+    return { node: node, path: wholepath };
   }
 };
 
+/*
 BTree.prototype.delete = function(value){
   this.removedKeys = [];
   if (!this.search(value, true)) {
@@ -43,7 +45,7 @@ BTree.prototype.delete = function(value){
   }
   var target = this.search(value);
   var lowBound = Math.floor(this.order/2)
-target.swapchildren(value, lowBound);
+  target.swapchildren(value, lowBound);
   if(target.keys.length - 1 < lowBound){
     if(target.isLeaf()){
       this.removedKeys.push(value); 
@@ -51,28 +53,40 @@ target.swapchildren(value, lowBound);
       target.unsetParent();
       
     }
-
   }else{
     if(target.isLeaf()){
     target.delete(value);
     }
   }
+}*/
 
+BTree.prototype.delete = function(value) {
+  if (!this.search(value, true)) {
+    Newalert("The value " + value + " does not exist!");
+    this.numberoftreenode=1;
+    return false;
+  }
+  this.numberoftreenode=1;
+  // console.log(this.root);
+  this.root.remove(value);
+  while (this.root.keyCount() == 0) {
+    this.root = this.root.children[0];
+  }
+  this.root.tidyup();
+};
 
-
-}
-
-BTree.prototype.removedChild = function(){
+BTree.prototype.removedChild = function() {
   return this.removedKeys;
-}
+};
 
 // Main insertion function
 BTree.prototype.insert = function(value, silent) {
   if (this.search(value, true)) {
     if (!silent) Newalert("The value " + value + " already exists!");
+    this.numberoftreenode=1;
     return false;
   }
-
+  this.numberoftreenode=1;
   this.current_leaf_offset = 0;
   this.unattached_nodes = [[]];
 
@@ -87,8 +101,6 @@ BTree.prototype.insert = function(value, silent) {
   // 2. Apply target.insert (recursive)
   target.insert(value);
 };
-
-
 
 BTree.prototype.addUnattached = function(node, level) {
   this.unattached_nodes[level] = this.unattached_nodes[level] || [];
@@ -124,12 +136,12 @@ BTree.prototype.insertWholePath = function(value, silent) {
   // 1. Find which leaf the inserted value should go
   var target = this.search(value);
   var searchPath = this.searchWholePath(value);
-  wholePath.push({"type":"search", "value":searchPath});
+  wholePath.push({ type: "search", value: searchPath });
   if (!target) {
     // create new root node
     this.root = this.createNode();
     target = this.root;
-    wholePath.push({"type":"newnode", target});
+    wholePath.push({ type: "newnode", target });
   }
 
   // 2. Apply target.insert (recursive)
@@ -164,6 +176,16 @@ BTree.prototype.seed = function(count) {
 BTree.prototype.isEmpty = function() {
   return !this.root;
 };
+
+BTree.prototype.numberofChildren = function(treenode){
+  if(treenode.children.length>0){
+    this.numberoftreenode += treenode.children.length;
+    for(var i =0; i<treenode.children.length;i++){
+      this.numberofChildren(treenode.children[i])
+    }
+    
+  } 
+}
 
 function Newalert(e) {
   $("body").append(

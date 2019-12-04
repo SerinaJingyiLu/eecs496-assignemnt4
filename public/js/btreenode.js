@@ -1,10 +1,11 @@
 // constructor
-var BTreeNode = function(tree, keys, children, parent) {
+var BTreeNode = function(tree, keys, children, parent, degree) {
   var node = Object.create(BTreeNode.prototype);
   node.tree = tree;
   node.keys = keys || [];
   node.children = children || [];
   node.parent = parent || null;
+  node.degree = degree;
   return node;
 };
 
@@ -54,48 +55,49 @@ BTreeNode.prototype.traverse2 = function(value, contains, wholepath) {
   }
 };
 
-BTreeNode.prototype.delete = function(value){
+BTreeNode.prototype.delete = function(value) {
   var int = parseInt(value) || 0;
-  this.keys.splice( this.keys.indexOf(int), 1 );
+  this.keys.splice(this.keys.indexOf(int), 1);
   this.keys.sort(function(a, b) {
     // sort numbers ascending
     if (a > b) return 1;
     else if (a < b) return -1;
     else return 0;
   });
-}
+};
 
-BTreeNode.prototype.swapchildren = function(value,lowBound){
+BTreeNode.prototype.swapchildren = function(value, lowBound) {
   var a = this.parent.children.length;
-  for(var i=0;i<a;i++){
-    if(this.parent.children[i].keys.includes(value)){
-      if(i>0&&i<a-1){
-        if(this.parent.children[i-1].keys.length>lowBound||this.parent.children[i+1].keys.length>lowBound){
-          if(this.parent.children[i-1].keys.length>lowBound){
-
-          }else{
-            
+  for (var i = 0; i < a; i++) {
+    if (this.parent.children[i].keys.includes(value)) {
+      if (i > 0 && i < a - 1) {
+        if (
+          this.parent.children[i - 1].keys.length > lowBound ||
+          this.parent.children[i + 1].keys.length > lowBound
+        ) {
+          if (this.parent.children[i - 1].keys.length > lowBound) {
+          } else {
           }
         }
-      }else if(i==0){
-        if(this.parent.children[i+1].keys.length>lowBound){
-          console.log('success')
+      } else if (i == 0) {
+        if (this.parent.children[i + 1].keys.length > lowBound) {
+          console.log("success");
         }
-      }else{
-        if(this.parent.children[i-1].keys.length>lowBound){
-          console.log('success')
+      } else {
+        if (this.parent.children[i - 1].keys.length > lowBound) {
+          console.log("success");
         }
       }
     }
   }
-}
+};
 
 BTreeNode.prototype.insert = function(value) {
   var int = parseInt(value) || 0;
-  if (int <= 0 || int > 1000000000000) {
-    Newalert("Please enter a valid integer.");
-    return false;
-  }
+  // if (int <= 0 || int > 1000000000000) {
+  //   Newalert("Please enter a valid integer.");
+  //   return false;
+  // }
 
   // insert element
   this.keys.push(value);
@@ -148,7 +150,7 @@ BTreeNode.prototype.insert2 = function(value) {
   }
   var insertPath = [];
   // insert element
-  insertPath.push({"type":"addelement", "value":this.keys.slice(0)});
+  insertPath.push({ type: "addelement", value: this.keys.slice(0) });
   this.keys.push(value);
   this.keys.sort(function(a, b) {
     // sort numbers ascending
@@ -156,14 +158,14 @@ BTreeNode.prototype.insert2 = function(value) {
     else if (a < b) return -1;
     else return 0;
   });
-  insertPath.push({"type":"sortkeys", "value":this.keys.slice(0)});
+  insertPath.push({ type: "sortkeys", value: this.keys.slice(0) });
 
   // if overflow, handle overflow (go up)
-  if (this.keys.length === this.tree.order) {  
+  if (this.keys.length === this.tree.order) {
     insertPath.push(this.handleOverflow2());
   } else {
     // if not filled, start attaching children
-    insertPath.push({"type":"attachchildren"});
+    insertPath.push({ type: "attachchildren" });
     this.attachChildren();
   }
 };
@@ -190,7 +192,7 @@ BTreeNode.prototype.handleOverflow2 = function() {
   // Push median up to target, increment offset
   tree.current_leaf_offset += 1;
   target.insert(median);
-  return {"type":"splitnode", "value":{"median":median}}
+  return { type: "splitnode", value: { median: median } };
 };
 
 // function to go down and reattach nodes
@@ -276,6 +278,20 @@ BTreeNode.prototype.isInternal = function() {
   return !this.isLeaf() && !this.isRoot();
 };
 
+BTreeNode.prototype.tidyup = function() {
+  while (this.children.length > this.keyCount() + 1) {
+    this.children.pop();
+  }
+  this.children = this.children.filter(function(element) {
+    return element !== undefined && element !== null;
+  });
+  if (!this.isLeaf()) {
+    this.children.forEach(function(child, index) {
+      child.tidyup();
+    });
+  }
+};
+
 // generate node json, used in BTree::toJSON
 BTreeNode.prototype.toJSON = function() {
   var json = {};
@@ -284,7 +300,7 @@ BTreeNode.prototype.toJSON = function() {
   if (!this.isLeaf()) {
     json.children = [];
     this.children.forEach(function(child, index) {
-      json.children.push(child.toJSON());
+      if (child != undefined) json.children.push(child.toJSON());
     });
   }
   return json;
@@ -300,3 +316,181 @@ function Newalert(e) {
     $("#msg").remove();
   });
 }
+
+BTreeNode.prototype.keyCount = function() {
+  return this.keys.length;
+};
+
+BTreeNode.prototype.getChildContaining = function(key) {
+  for (var i = 0; i < this.keyCount(); i += 1) {
+    if (key <= this.keys[i]) {
+      return this.children[i];
+    }
+  }
+
+  return this.children[this.keyCount()];
+};
+
+BTreeNode.prototype.remove = function(key) {
+  //console.log(this);
+  if (this.isLeaf()) {
+    return this.removeKey(key);
+  } else {
+    var keyIndex = this.indexOfKey(key);
+    var child;
+
+    if (keyIndex === -1) {
+      child = this.getChildContaining(key);
+      //console.log(child);
+      var result = child.remove(key);
+
+      this.rebalance(this.children.indexOf(child));
+      return result;
+    } else {
+      // replace key with max key from left child
+      child = this.children[keyIndex];
+      this.keys[keyIndex] = child.extractMax();
+
+      this.rebalance(keyIndex);
+      return true;
+    }
+  }
+};
+
+BTreeNode.prototype.rebalance = function(childIndex) {
+  const MIN_NKEYS = Math.ceil(this.degree / 2.0) - 1;
+
+  var child = this.children[childIndex];
+  if (child.keyCount() >= MIN_NKEYS) {
+    return;
+  }
+
+  // borrow from left child
+  if (childIndex) {
+    var leftChild = this.children[childIndex - 1];
+    if (leftChild.keyCount() > MIN_NKEYS) {
+      var lastKey = leftChild.keys[leftChild.keyCount() - 1];
+      var lastChild = leftChild.children[leftChild.keyCount()];
+      leftChild.keys.pop();
+
+      var key = this.keys[childIndex - 1];
+      this.keys[childIndex - 1] = lastKey;
+
+      for (var i = child.keyCount() - 1; i >= 0; i--) {
+        child.keys[i + 1] = child.keys[i];
+      }
+      child.keys[0] = key;
+
+      for (var i = child.keyCount(); i >= 0; i--) {
+        child.children[i + 1] = child.children[i];
+      }
+      child.children[0] = lastChild;
+
+      return;
+    }
+  }
+
+  // borrow from right child
+  if (childIndex < this.keyCount()) {
+    var rightChild = this.children[childIndex + 1];
+    if (rightChild.keyCount() > MIN_NKEYS) {
+      var firstKey = rightChild.keys[0];
+      var firstChild = rightChild.children[0];
+
+      for (var i = 0; i < rightChild.keyCount() - 1; i++) {
+        rightChild.keys[i] = rightChild.keys[i + 1];
+      }
+
+      for (var i = 0; i < rightChild.keyCount(); i++) {
+        rightChild.children[i] = rightChild.children[i + 1];
+      }
+
+      rightChild.keys.pop();
+
+      child.keys[child.keyCount()] = this.keys[childIndex];
+      this.keys[childIndex] = firstKey;
+      child.children[child.keyCount() + 1] = firstChild;
+
+      return;
+    }
+  }
+console.log('aaaaaa')
+  // merge
+  if (childIndex) {
+    // merge left and current
+    childIndex -= 1;
+  }
+
+  // childIndex will point to the *left* node of two merged nodes
+
+  var merged = this.mergeChilds(childIndex);
+
+  for (var i = childIndex; i < this.keyCount() - 1; i += 1) {
+    this.keys[i] = this.keys[i + 1];
+  }
+  for (var i = childIndex; i < this.keyCount(); i += 1) {
+    this.children[i] = this.children[i + 1];
+  }
+  this.keys.pop();
+  //this.children.pop();
+  this.children[childIndex] = merged;
+};
+
+BTreeNode.prototype.mergeChilds = function(leftIndex) {
+  var key = this.keys[leftIndex];
+
+  var left = this.children[leftIndex];
+  var right = this.children[leftIndex + 1];
+
+  left.keys[left.keyCount()] = key;
+
+  // copy right keys and childs into left
+  for (var i = 0; i < right.keyCount(); i++) {
+    left.children[left.keyCount()] = right.children[i];
+    left.keys[left.keyCount()] = right.keys[i];
+  }
+
+  left.children[left.keyCount()] = right.children[right.keyCount()];
+
+  return left;
+};
+
+BTreeNode.prototype.extractMax = function() {
+  var key;
+
+  if (this.isLeaf()) {
+    key = this.keys[this.keyCount() - 1];
+    this.keys.pop();
+  } else {
+    var child = this.children[this.keyCount()];
+    key = child.extractMax();
+
+    this.rebalance(this.keyCount());
+  }
+
+  return key;
+};
+
+BTreeNode.prototype.indexOfKey = function(key) {
+  for (var i = 0; i < this.keyCount(); i += 1) {
+    if (this.keys[i] === key) {
+      return i;
+    }
+  }
+  return -1;
+};
+
+BTreeNode.prototype.removeKey = function(key) {
+  console.assert(this.isLeaf());
+
+  var keyIndex = this.indexOfKey(key);
+  if (keyIndex === -1) return false;
+
+  // delete key
+  for (var i = keyIndex + 1; i < this.keyCount(); i += 1) {
+    this.keys[i - 1] = this.keys[i];
+  }
+
+  this.keys.pop();
+  return true;
+};
