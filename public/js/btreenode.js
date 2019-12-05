@@ -409,7 +409,7 @@ BTreeNode.prototype.rebalance = function(childIndex) {
 
       child.keys[child.keyCount()] = this.keys[childIndex];
       this.keys[childIndex] = firstKey;
-      child.children[child.keyCount() + 1] = firstChild;
+      child.children[child.keyCount()] = firstChild;
 
       return;
     }
