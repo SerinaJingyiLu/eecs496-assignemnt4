@@ -242,12 +242,12 @@ $(function() {
       Btree.numberofChildren(Btree.root)
       removedNode = oldnode - Btree.numberoftreenode;
       oldnode = Btree.numberoftreenode;
-      console.log(removedNode)
       $("#deleteNode").val("");
       data = Btree.toJSON();
       root = d3.hierarchy(data);
       update(data);
     });
+    document.getElementById("degreetext4").innerHTML = "Delete number " + value;
   }
   });
 
